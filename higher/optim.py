@@ -215,6 +215,7 @@ class DifferentiableOptimizer(_abc.ABC):
         )
 
         self._grads_preproc = [grad.clone() for grad in all_grads]
+        if preproc_grad is not None: all_grads = preproc_grad(self, all_grads)
 
         grouped_grads = []
         for group, mapping in zip(self.param_groups, self._group_to_param_list):
@@ -224,8 +225,6 @@ class DifferentiableOptimizer(_abc.ABC):
                 grads.append(all_grads[index])
             grouped_grads.append(grads)
 
-        if preproc_grad is not None: 
-            for g_group in grouped_grads: preproc_grad(g_group)
         self._update(grouped_grads)
 
         new_params = params[:]
